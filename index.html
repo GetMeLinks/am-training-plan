@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AM Training Action Plan</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-text-primary: #1a1a18;
+    --color-text-secondary: #73726c;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f1efe8;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.25);
+    --color-border-primary: rgba(0,0,0,0.35);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text-primary: #e8e6de;
+      --color-text-secondary: #9c9a92;
+      --color-background-primary: #1e1e1c;
+      --color-background-secondary: #2a2a28;
+      --color-border-tertiary: rgba(255,255,255,0.1);
+      --color-border-secondary: rgba(255,255,255,0.2);
+      --color-border-primary: rgba(255,255,255,0.3);
+    }
+  }
+
+  body { font-family: var(--font-sans); background: var(--color-background-secondary); color: var(--color-text-primary); min-height: 100vh; padding: 2rem 1rem; display: flex; flex-direction: column; gap: 1.5rem; }
+  .container { max-width: 900px; margin: 0 auto; width: 100%; background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); overflow: hidden; }
+
+  .section-divider { max-width: 900px; margin: 0 auto; width: 100%; display: flex; align-items: center; gap: 12px; }
+  .section-divider-line { flex: 1; height: 0.5px; background: var(--color-border-tertiary); }
+  .section-divider-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+
+  .header { padding: 1.5rem 1.5rem 0.75rem; }
+  .header h1 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
+  .header p  { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+
+  .progress-wrap { padding: 1rem 1.5rem 0; }
+  .progress-bar-bg { background: var(--color-background-secondary); border-radius: 20px; height: 6px; overflow: hidden; margin-bottom: 5px; }
+  .progress-bar-fill { height: 100%; background: #1D9E75; border-radius: 20px; transition: width .4s ease; }
+  .progress-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 1rem; display: block; }
+
+  .tabs { display: flex; gap: 6px; padding: 0 1.5rem 1rem; flex-wrap: wrap; }
+  .seo-person-tabs { display: flex; gap: 6px; padding: 0 1.5rem 1rem; flex-wrap: wrap; }
+  .tab { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 13px; cursor: pointer; background: transparent; color: var(--color-text-secondary); transition: all .15s; font-family: var(--font-sans); }
+  .tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+
+  .legend { display: flex; gap: 16px; padding: 0 1.5rem .75rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 1.5rem 1.5rem; }
+  @media (max-width: 580px) { .grid { grid-template-columns: 1fr; } }
+
+  .summary-section { padding: 0 1.5rem 1rem; }
+  .inner-section-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 8px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .summary-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; }
+  .summary-name { font-size: 11px; color: var(--color-text-secondary); margin: 0 0 4px; }
+  .summary-stat { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+  .summary-sub  { font-size: 11px; color: var(--color-text-secondary); margin: 0; }
+
+  .skill-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; transition: opacity .25s; }
+  .skill-card.critical { border-color: #E24B4A; border-left: 3px solid #E24B4A; }
+  .skill-card.high     { border-color: #EF9F27; border-left: 3px solid #EF9F27; }
+  .skill-card.medium   { border-color: #1D9E75; border-left: 3px solid #1D9E75; }
+  .skill-card.low-pri  { border-left: 3px solid var(--color-border-tertiary); }
+  .skill-card.done     { opacity: .5; border-left-color: #1D9E75 !important; border-color: rgba(29,158,117,0.3) !important; }
+
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .skill-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0; flex: 1; line-height: 1.4; }
+  .skill-card.done .skill-title { text-decoration: line-through; color: var(--color-text-secondary); }
+  .skill-meta { font-size: 11px; color: var(--color-text-secondary); margin: 0 0 8px; }
+
+  .complete-btn { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; transition: all .15s; font-family: var(--font-sans); color: transparent; line-height: 1; }
+  .complete-btn:hover { border-color: #1D9E75; background: rgba(29,158,117,0.08); }
+  .complete-btn.checked { background: #1D9E75; border-color: #1D9E75; color: #fff; }
+
+  .priority-badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-bottom: 6px; }
+  .priority-badge.critical { background: #FCEBEB; color: #A32D2D; }
+  .priority-badge.high     { background: #FAEEDA; color: #633806; }
+  .priority-badge.medium   { background: #E1F5EE; color: #085041; }
+  .priority-badge.low-pri  { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .priority-badge.complete { background: #E1F5EE; color: #085041; }
+
+  .bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .bar-label { font-size: 11px; color: var(--color-text-secondary); width: 50px; flex-shrink: 0; }
+  .bar-bg { flex: 1; height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+  .bar-fill.red   { background: #E24B4A; }
+  .bar-fill.amber { background: #EF9F27; }
+  .bar-fill.green { background: #1D9E75; }
+  .score-ctrl { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+  .score-btn { width: 18px; height: 18px; border-radius: 4px; border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; font-size: 13px; font-family: var(--font-sans); color: var(--color-text-secondary); display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0; transition: all .12s; }
+  .score-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); }
+  .score-val { font-size: 11px; color: var(--color-text-secondary); width: 22px; text-align: center; font-weight: 500; }
+
+  .training-note { font-size: 11px; color: var(--color-text-secondary); margin: 6px 0 0; padding: 6px 8px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); line-height: 1.5; }
+
+  .asset-section { margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--color-border-tertiary); }
+  .asset-label { font-size: 10px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 5px; }
+  .asset-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+  .asset-item { display: flex; align-items: center; gap: 5px; }
+  .asset-icon { font-size: 12px; flex-shrink: 0; }
+  .asset-link { font-size: 11px; color: #185FA5; text-decoration: none; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .asset-link:hover { text-decoration: underline; }
+  .asset-remove { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 14px; padding: 0; line-height: 1; font-family: var(--font-sans); opacity: .6; }
+  .asset-remove:hover { color: #E24B4A; opacity: 1; }
+  .add-asset-row { display: flex; gap: 4px; flex-wrap: wrap; }
+  .add-asset-url { flex: 1; min-width: 120px; font-size: 11px; padding: 5px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-family: var(--font-sans); }
+  .add-asset-lbl { width: 100px; font-size: 11px; padding: 5px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-family: var(--font-sans); }
+  .add-asset-url::placeholder, .add-asset-lbl::placeholder { color: var(--color-text-secondary); }
+  .add-asset-url:focus, .add-asset-lbl:focus { outline: none; border-color: var(--color-border-primary); background: var(--color-background-primary); }
+  .add-asset-btn { font-size: 11px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: var(--font-sans); white-space: nowrap; transition: all .15s; }
+  .add-asset-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); }
+
+  /* Sync indicator */
+  #sync-indicator { position: fixed; bottom: 16px; right: 16px; font-size: 11px; padding: 6px 12px; border-radius: 20px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); transition: opacity .4s; opacity: 0; pointer-events: none; }
+  #sync-indicator.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate" style="
+  position:fixed; inset:0; z-index:9999;
+  background:#f1efe8; display:flex; align-items:center; justify-content:center;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="
+    background:#fff; border-radius:12px; padding:2rem 2.5rem;
+    border:0.5px solid rgba(0,0,0,0.12); width:100%; max-width:340px;
+    box-shadow:0 4px 24px rgba(0,0,0,0.08); text-align:center;">
+    <p style="font-size:15px;font-weight:500;margin:0 0 6px;color:#1a1a18">Team access only</p>
+    <p style="font-size:12px;color:#73726c;margin:0 0 20px">Enter the password to view the training plan.</p>
+    <input id="pw-input" type="password" placeholder="Password"
+      style="width:100%;padding:9px 12px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.25);
+             font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:10px;"
+      onkeydown="if(event.key==='Enter')checkPW()">
+    <p id="pw-err" style="font-size:11px;color:#E24B4A;margin:0 0 10px;min-height:16px;"></p>
+    <button onclick="checkPW()" style="
+      width:100%;padding:9px;border-radius:8px;border:none;
+      background:#1a1a18;color:#fff;font-size:13px;font-weight:500;
+      cursor:pointer;font-family:inherit;">Enter</button>
+  </div>
+</div>
+
+<!-- SYNC INDICATOR -->
+<div id="sync-indicator">✓ Saved</div>
+
+<!-- ═══════════ SECTION 1 — AM Skills ═══════════ -->
+<div class="container" id="am-container">
+  <div class="header">
+    <h1>Training action plan — account management skills</h1>
+    <p>Priority ranked by role importance × skill gap. Changes sync in real-time for everyone.</p>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="am-progress-fill" style="width:0%"></div></div>
+    <span class="progress-label" id="am-progress-label">0 of 24 trainings complete</span>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="setAMView('all')">All gaps</button>
+    <button class="tab" onclick="setAMView('taylor')">Kerly</button>
+    <button class="tab" onclick="setAMView('gail')">Gail</button>
+    <button class="tab" onclick="setAMView('jerome')">Jerome</button>
+  </div>
+  <div id="am-summary-section" class="summary-section">
+    <div class="inner-section-label">Gap overview by person</div>
+    <div class="summary-grid">
+      <div class="summary-card"><p class="summary-name">Kerly</p><p class="summary-stat" id="am-t-critical">—</p><p class="summary-sub">critical gaps</p></div>
+      <div class="summary-card"><p class="summary-name">Gail</p><p class="summary-stat" id="am-g-critical">—</p><p class="summary-sub">critical gaps</p></div>
+      <div class="summary-card"><p class="summary-name">Jerome</p><p class="summary-stat" id="am-j-critical">—</p><p class="summary-sub">critical gaps</p></div>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><span class="dot" style="background:#E24B4A"></span> Critical</div>
+    <div class="legend-item"><span class="dot" style="background:#EF9F27"></span> High priority</div>
+    <div class="legend-item"><span class="dot" style="background:#1D9E75"></span> Medium priority</div>
+    <div class="legend-item"><span class="dot" style="background:#B4B2A9"></span> Monitor</div>
+    <div class="legend-item"><span class="dot" style="background:#1D9E75;opacity:.45"></span> Complete</div>
+  </div>
+  <div class="grid" id="am-cards-grid"></div>
+</div>
+
+<div class="section-divider">
+  <div class="section-divider-line"></div>
+  <span class="section-divider-label">SEO skills</span>
+  <div class="section-divider-line"></div>
+</div>
+
+<!-- ═══════════ SECTION 2 — SEO Skills ═══════════ -->
+<div class="container" id="seo-container">
+  <div class="header">
+    <h1>Training action plan — SEO skills</h1>
+    <p>Priority ranked by role importance × skill gap. Changes sync in real-time for everyone.</p>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="seo-progress-fill" style="width:0%"></div></div>
+    <span class="progress-label" id="seo-progress-label">0 of 27 trainings complete</span>
+  </div>
+  <div class="seo-person-tabs" id="seo-person-tabs">
+    <button class="tab active" onclick="setSEOPerson('all')">All three</button>
+    <button class="tab" onclick="setSEOPerson('kerly')">Kerly</button>
+    <button class="tab" onclick="setSEOPerson('gail')">Gail</button>
+    <button class="tab" onclick="setSEOPerson('jerome')">Jerome</button>
+  </div>
+  <div id="seo-summary-section" class="summary-section">
+    <div class="inner-section-label">Gap overview by person</div>
+    <div class="summary-grid">
+      <div class="summary-card"><p class="summary-name">Kerly</p><p class="summary-stat" id="seo-k-critical">—</p><p class="summary-sub">critical gaps</p></div>
+      <div class="summary-card"><p class="summary-name">Gail</p><p class="summary-stat" id="seo-g-critical">—</p><p class="summary-sub">critical gaps</p></div>
+      <div class="summary-card"><p class="summary-name">Jerome</p><p class="summary-stat" id="seo-j-critical">—</p><p class="summary-sub">critical gaps</p></div>
+    </div>
+  </div>
+  <div class="seo-person-tabs">
+    <button class="tab active" onclick="setSEOView('all')">All categories</button>
+    <button class="tab" onclick="setSEOView('keyword')">Keyword research</button>
+    <button class="tab" onclick="setSEOView('onpage')">On-page SEO</button>
+    <button class="tab" onclick="setSEOView('links')">Link building</button>
+    <button class="tab" onclick="setSEOView('data')">Data & analysis</button>
+    <button class="tab" onclick="setSEOView('content')">Content</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><span class="dot" style="background:#E24B4A"></span> Critical</div>
+    <div class="legend-item"><span class="dot" style="background:#EF9F27"></span> High priority</div>
+    <div class="legend-item"><span class="dot" style="background:#1D9E75"></span> Medium priority</div>
+    <div class="legend-item"><span class="dot" style="background:#B4B2A9"></span> Monitor</div>
+    <div class="legend-item"><span class="dot" style="background:#1D9E75;opacity:.45"></span> Complete</div>
+  </div>
+  <div class="grid" id="seo-cards-grid"></div>
+</div>
+
+<!-- ═══════════ FIREBASE + APP SCRIPT ═══════════ -->
+<script type="module">
+import { initializeApp }            from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, update }
+                                    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+// ── Firebase init ──────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyAGBv40-qWRI3Xa-ZtQS2h2DkjLT9iKiXA",
+  authDomain:        "am-training-335e7.firebaseapp.com",
+  databaseURL:       "https://am-training-335e7-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "am-training-335e7",
+  storageBucket:     "am-training-335e7.firebasestorage.app",
+  messagingSenderId: "541769417388",
+  appId:             "1:541769417388:web:7341f0aafb685cc3bb9509"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ── Password gate ──────────────────────────────────────────────────────────
+// ↓ Change this to your team password
+const TEAM_PASSWORD = 'training2025';
+
+window.checkPW = function() {
+  const val = document.getElementById('pw-input').value;
+  if (val === TEAM_PASSWORD) {
+    document.getElementById('gate').remove();
+  } else {
+    document.getElementById('pw-err').textContent = 'Incorrect password. Try again.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+};
+document.getElementById('pw-input').focus();
+
+// ── State (driven entirely by Firebase) ────────────────────────────────────
+let state = { completed: {}, assets: {}, scores: {} };
+// completed stored as { skillId: true } (Firebase-friendly — no Sets)
+
+// ── Sync indicator ─────────────────────────────────────────────────────────
+let syncTimer;
+function flashSync() {
+  const el = document.getElementById('sync-indicator');
+  el.classList.add('visible');
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => el.classList.remove('visible'), 1800);
+}
+
+// ── Write helpers ──────────────────────────────────────────────────────────
+function saveState() {
+  set(ref(db, 'state'), {
+    completed: state.completed,
+    assets:    state.assets,
+    scores:    state.scores
+  }).then(flashSync);
+}
+
+// ── Real-time listener — fires on load AND on every remote change ──────────
+onValue(ref(db, 'state'), snap => {
+  const data = snap.val();
+  if (data) {
+    state.completed = data.completed || {};
+    state.assets    = data.assets    || {};
+    state.scores    = data.scores    || {};
+  }
+  renderAll();
+});
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function liveScore(skillId, person, baseScore) {
+  return (state.scores[skillId] && state.scores[skillId][person] != null)
+    ? state.scores[skillId][person] : baseScore;
+}
+
+const RI_WEIGHT = { H:3, M:2, L:1 };
+function gap(score, ri)           { return (5 - (score ?? 3)) * RI_WEIGHT[ri]; }
+function priorityClass(score, ri) {
+  const g = gap(score, ri);
+  if (g >= 9) return 'critical'; if (g >= 6) return 'high'; if (g >= 3) return 'medium'; return 'low-pri';
+}
+function priorityLabel(cls) {
+  return { critical:'Critical — train first', high:'High priority', medium:'Medium priority', 'low-pri':'Monitor' }[cls];
+}
+function barColor(s) { return s <= 2 ? 'red' : s <= 3 ? 'amber' : 'green'; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function assetIcon(url) {
+  if (/youtube|youtu\.be|vimeo|loom|wistia/i.test(url)) return '▶';
+  if (/docs\.google|notion\.so|confluence|dropbox|box\.com|drive\.google/i.test(url)) return '📄';
+  return '🔗';
+}
+
+// ── Card builders ──────────────────────────────────────────────────────────
+function makeBarRow(skillId, personKey, displayName, baseScore) {
+  const s   = liveScore(skillId, personKey, baseScore);
+  const pct = Math.round((s / 5) * 100);
+  return `<div class="bar-row">
+    <span class="bar-label">${displayName}</span>
+    <div class="bar-bg"><div class="bar-fill ${barColor(s)}" style="width:${pct}%"></div></div>
+    <div class="score-ctrl">
+      <button class="score-btn" onclick="adjustScore('${skillId}','${personKey}',${baseScore},-1)">−</button>
+      <span class="score-val">${s}/5</span>
+      <button class="score-btn" onclick="adjustScore('${skillId}','${personKey}',${baseScore},+1)">+</button>
+    </div>
+  </div>`;
+}
+
+function makeCard(skill, barsHtml, noteHtml) {
+  const done   = !!state.completed[skill.id];
+  const assets = state.assets[skill.id] || [];
+  const worst  = skill.worst || 'low-pri';
+  const riLabel = { H:'High role importance', M:'Mid role importance', L:'Low role importance' }[skill.ri];
+
+  const assetItems = assets.map((a, i) => `
+    <div class="asset-item">
+      <span class="asset-icon">${assetIcon(a.url)}</span>
+      <a class="asset-link" href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.label || a.url)}</a>
+      <button class="asset-remove" onclick="removeAsset('${skill.id}',${i})">×</button>
+    </div>`).join('');
+
+  return `<div class="skill-card ${worst}${done ? ' done' : ''}" id="card-${skill.id}">
+    <span class="priority-badge ${done ? 'complete' : worst}">${done ? '✓ Complete' : priorityLabel(worst)}</span>
+    <div class="card-top">
+      <p class="skill-title">${skill.skill}</p>
+      <button class="complete-btn${done ? ' checked' : ''}" onclick="toggleComplete('${skill.id}')">${done ? '✓' : ''}</button>
+    </div>
+    <p class="skill-meta">${skill.cat} · ${riLabel}</p>
+    ${barsHtml}${noteHtml}
+    <div class="asset-section">
+      <p class="asset-label">Training assets</p>
+      ${assets.length ? `<div class="asset-list">${assetItems}</div>` : ''}
+      <div class="add-asset-row">
+        <input class="add-asset-url" id="url-${skill.id}" type="url" placeholder="Paste link (video, doc…)" onkeydown="if(event.key==='Enter')addAsset('${skill.id}')">
+        <input class="add-asset-lbl" id="lbl-${skill.id}" type="text" placeholder="Label" onkeydown="if(event.key==='Enter')addAsset('${skill.id}')">
+        <button class="add-asset-btn" onclick="addAsset('${skill.id}')">+ Add</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Interactions (exposed to global scope for inline onclick) ──────────────
+window.toggleComplete = function(id) {
+  state.completed[id] = state.completed[id] ? null : true;
+  // null removes the key in Firebase
+  saveState();
+};
+
+window.adjustScore = function(skillId, person, baseScore, delta) {
+  if (!state.scores[skillId]) state.scores[skillId] = {};
+  const current = liveScore(skillId, person, baseScore);
+  state.scores[skillId][person] = Math.min(5, Math.max(1, current + delta));
+  saveState();
+};
+
+window.addAsset = function(id) {
+  const urlEl = document.getElementById('url-' + id);
+  const lblEl = document.getElementById('lbl-' + id);
+  const url   = urlEl?.value.trim();
+  if (!url) return;
+  if (!state.assets[id]) state.assets[id] = [];
+  state.assets[id].push({ url, label: lblEl?.value.trim() || '' });
+  saveState();
+};
+
+window.removeAsset = function(id, idx) {
+  if (!state.assets[id]) return;
+  state.assets[id].splice(idx, 1);
+  if (!state.assets[id].length) delete state.assets[id];
+  saveState();
+};
+
+// ── AM SKILLS DATA ─────────────────────────────────────────────────────────
+const AM_PEOPLE  = ['taylor', 'gail', 'jerome'];
+const AM_DISPLAY = { taylor:'Kerly', gail:'Gail', jerome:'Jerome' };
+
+const AM_SKILLS = [
+  { id:'am1',  cat:"Client communication",   skill:"Respond to emails within SLA",                  ri:"H", taylor:{s:4},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am2',  cat:"Client communication",   skill:"Handle routine client questions",                ri:"H", taylor:{s:4},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am3',  cat:"Client communication",   skill:"Escalate complex questions to Senior AM",        ri:"H", taylor:{s:4},               gail:{s:4},                                    jerome:{s:5} },
+  { id:'am4',  cat:"Client communication",   skill:"Strategy calls: note-taking & follow-ups",       ri:"H", taylor:{s:2,n:"No prior experience as note-taker"}, gail:{s:3,n:"Some experience, developing"}, jerome:{s:2,n:"Self-rated weakness"} },
+  { id:'am5',  cat:"Client communication",   skill:"Draft & send regular client updates",            ri:"H", taylor:{s:4},               gail:{s:4},                                    jerome:{s:5} },
+  { id:'am6',  cat:"Client communication",   skill:"Handle complaints & de-escalate professionally", ri:"H", taylor:{s:3,n:"Needs training on approach"}, gail:{s:3,n:"Developing"},    jerome:{s:5} },
+  { id:'am7',  cat:"Account administration", skill:"Submit link orders per client requirements",     ri:"H", taylor:{s:4},               gail:{s:2,n:"Unsure of process for new clients"}, jerome:{s:2,n:"Self-rated weakness"} },
+  { id:'am8',  cat:"Account administration", skill:"Maintain accurate CRM & PM tool records",        ri:"L", taylor:{s:4,n:"Needs GHL familiarisation"}, gail:{s:5},                    jerome:{s:2,n:"Self-rated weakness"} },
+  { id:'am9',  cat:"Account administration", skill:"Track live links, replacements & fulfillment",   ri:"L", taylor:{s:3},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am10', cat:"Account administration", skill:"Coordinate with outreach & operations teams",    ri:"H", taylor:{s:4},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am11', cat:"Account administration", skill:"Prepare performance reports",                    ri:"L", taylor:{s:3,n:"Needs training & template familiarity"}, gail:{s:1,n:"Never done it; needs video walkthrough"}, jerome:{s:2,n:"Self-rated weakness"} },
+  { id:'am12', cat:"Account administration", skill:"Manage client call bookings & scheduling",       ri:"H", taylor:{s:4},               gail:{s:5},                                    jerome:{s:4} },
+  { id:'am13', cat:"Account administration", skill:"Review TLDV recordings & extract action items",  ri:"M", taylor:{s:2,n:"Needs first-hand experience"}, gail:{s:5},                  jerome:{s:4} },
+  { id:'am14', cat:"Internal coordination",  skill:"Translate client needs into internal briefs",    ri:"L", taylor:{s:2,n:"Needs training & experience"}, gail:{s:4},                  jerome:{s:4} },
+  { id:'am15', cat:"Internal coordination",  skill:"Ensure internal teams understand priorities",    ri:"L", taylor:{s:3},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am16', cat:"Internal coordination",  skill:"Chase dependencies (approvals, payments)",       ri:"H", taylor:{s:3},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am17', cat:"Internal coordination",  skill:"Prepare exec briefs for Senior AM pre-call",     ri:"L", taylor:{s:2,n:"Believes this is very important"}, gail:{s:5},              jerome:{s:4} },
+  { id:'am18', cat:"Internal coordination",  skill:"Identify and flag account risks early",          ri:"H", taylor:{s:4},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am19', cat:"Internal coordination",  skill:"Ensure fulfillment progress is on track",        ri:"H", taylor:{s:3},               gail:{s:5},                                    jerome:{s:5} },
+  { id:'am20', cat:"Upsell & retention",     skill:"Spot upsell opportunities",                      ri:"M", taylor:{s:3,n:"Needs training"}, gail:{s:4},                               jerome:{s:2,n:"Self-rated weakness"} },
+  { id:'am21', cat:"Upsell & retention",     skill:"Provide upsell context to Senior AM",            ri:"M", taylor:{s:3,n:"Needs training"}, gail:{s:4},                               jerome:{s:2,n:"Self-rated weakness"} },
+  { id:'am22', cat:"Upsell & retention",     skill:"Support proposal prep with data & examples",     ri:"M", taylor:{s:3,n:"Needs training"}, gail:{s:4},                               jerome:{s:2,n:"Self-rated weakness"} },
+  { id:'am23', cat:"Upsell & retention",     skill:"Proactive communication to prevent churn",       ri:"H", taylor:{s:3,n:"Needs training"}, gail:{s:5},                               jerome:{s:5} },
+  { id:'am24', cat:"Upsell & retention",     skill:"Document client feedback & churn signals",       ri:"M", taylor:{s:4},               gail:{s:4},                                    jerome:{s:4} },
+];
+
+function amWorst(skill, persons) {
+  const order = ['critical','high','medium','low-pri'];
+  let best = 'low-pri';
+  persons.forEach(p => {
+    const d = skill[p]; if (!d) return;
+    const pc = priorityClass(liveScore(skill.id, p, d.s), skill.ri);
+    if (order.indexOf(pc) < order.indexOf(best)) best = pc;
+  });
+  return best;
+}
+
+function countAMCritical(person) {
+  return AM_SKILLS.filter(s => {
+    const d = s[person]; if (!d) return false;
+    return priorityClass(liveScore(s.id, person, d.s), s.ri) === 'critical';
+  }).length;
+}
+
+let amView = 'all';
+window.setAMView = function(v) {
+  amView = v;
+  document.querySelectorAll('#am-container .tab').forEach(t => {
+    t.classList.remove('active');
+    const lbl = t.textContent.trim().toLowerCase();
+    if ((v==='all'&&lbl==='all gaps')||lbl===v||(v==='taylor'&&lbl==='kerly')) t.classList.add('active');
+  });
+  renderAM();
+};
+
+function renderAM() {
+  const persons = amView === 'all' ? AM_PEOPLE : [amView];
+  const order   = ['critical','high','medium','low-pri'];
+  const annotated = AM_SKILLS.map(s => ({...s, worst: amWorst(s, persons)}));
+  const sorted = [...annotated].sort((a,b) => {
+    const ad = !!state.completed[a.id] ? 1 : 0;
+    const bd = !!state.completed[b.id] ? 1 : 0;
+    if (ad !== bd) return ad - bd;
+    return order.indexOf(a.worst) - order.indexOf(b.worst);
+  });
+
+  document.getElementById('am-cards-grid').innerHTML = sorted.map(skill => {
+    const barsHtml = persons.map(p => {
+      const d = skill[p]; if (!d) return '';
+      return makeBarRow(skill.id, p, AM_DISPLAY[p], d.s);
+    }).join('');
+    const notes   = persons.map(p => skill[p]?.n).filter(Boolean);
+    const noteHtml = notes.length ? `<div class="training-note">${notes.join(' · ')}</div>` : '';
+    return makeCard(skill, barsHtml, noteHtml);
+  }).join('');
+
+  document.getElementById('am-summary-section').style.display = amView === 'all' ? 'block' : 'none';
+
+  const done = AM_SKILLS.filter(s => !!state.completed[s.id]).length;
+  document.getElementById('am-progress-fill').style.width = Math.round(done / AM_SKILLS.length * 100) + '%';
+  document.getElementById('am-progress-label').textContent = `${done} of ${AM_SKILLS.length} trainings complete`;
+
+  document.getElementById('am-t-critical').textContent = countAMCritical('taylor');
+  document.getElementById('am-g-critical').textContent = countAMCritical('gail');
+  document.getElementById('am-j-critical').textContent = countAMCritical('jerome');
+}
+
+// ── SEO SKILLS DATA ────────────────────────────────────────────────────────
+const SEO_PERSON_KEYS = ['kerly', 'gail', 'jerome'];
+const SEO_DISPLAY     = { kerly:'Kerly', gail:'Gail', jerome:'Jerome' };
+
+const SEO_SKILLS = [
+  { id:'seo1',  cat:"Keyword research", catKey:"keyword", skill:"Identifying search intent",                       ri:"H", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo2',  cat:"Keyword research", catKey:"keyword", skill:"Keyword clustering / topic grouping",              ri:"H", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo3',  cat:"Keyword research", catKey:"keyword", skill:"Identifying low-competition opportunities",        ri:"H", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo4',  cat:"Keyword research", catKey:"keyword", skill:"Building keyword strategies for pages",            ri:"H", kerly:{s:4,nd:true,n:"Uses GSC as starting point; dilemma choosing top keywords for money pages"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo5',  cat:"On-page SEO",      catKey:"onpage",  skill:"Title tag & meta description optimisation",        ri:"H", kerly:{s:5,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo6',  cat:"On-page SEO",      catKey:"onpage",  skill:"Heading structure (H1–H6)",                        ri:"H", kerly:{s:5,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo7',  cat:"On-page SEO",      catKey:"onpage",  skill:"Internal linking strategies",                      ri:"L", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo8',  cat:"On-page SEO",      catKey:"onpage",  skill:"Content optimisation for rankings",                ri:"L", kerly:{s:4,nd:true,n:"Needs more polishing"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo9',  cat:"On-page SEO",      catKey:"onpage",  skill:"Topical authority / content clusters",             ri:"L", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo10', cat:"On-page SEO",      catKey:"onpage",  skill:"Basic site audits",                                ri:"M", kerly:{s:4,nd:true,n:"Has experience but needs a refresher"}, gail:{s:2,nd:true}, jerome:{s:2,nd:true} },
+  { id:'seo11', cat:"On-page SEO",      catKey:"onpage",  skill:"Indexation & crawlability issues",                 ri:"L", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo12', cat:"On-page SEO",      catKey:"onpage",  skill:"Core Web Vitals understanding",                    ri:"L", kerly:{s:4,nd:true,n:"Has experience but needs a refresher"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo13', cat:"On-page SEO",      catKey:"onpage",  skill:"Structured data / schema",                         ri:"L", kerly:{s:3,nd:true}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo14', cat:"On-page SEO",      catKey:"onpage",  skill:"Site architecture & URL structure",                ri:"M", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo15', cat:"Link building",    catKey:"links",   skill:"Link prospecting",                                 ri:"L", kerly:{s:1,nd:true,n:"Conceptual understanding only; no hands-on experience"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo16', cat:"Link building",    catKey:"links",   skill:"Anchor text strategy",                             ri:"H", kerly:{s:4,nd:false}, gail:{s:2,nd:true}, jerome:{s:2,nd:true} },
+  { id:'seo17', cat:"Link building",    catKey:"links",   skill:"Link velocity strategy",                           ri:"M", kerly:{s:3,nd:true}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo18', cat:"Link building",    catKey:"links",   skill:"Evaluating link quality (DR, traffic, relevance)", ri:"H", kerly:{s:4,nd:false}, gail:{s:2,nd:true}, jerome:{s:2,nd:true} },
+  { id:'seo19', cat:"Link building",    catKey:"links",   skill:"Competitor backlink analysis",                     ri:"H", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo20', cat:"Data & analysis",  catKey:"data",    skill:"Using Ahrefs / SEMrush for analysis",              ri:"H", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo21', cat:"Data & analysis",  catKey:"data",    skill:"Google Search Console analysis",                   ri:"H", kerly:{s:4,nd:true,n:"Can do GSC audits; needs in-depth GSC training"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo22', cat:"Data & analysis",  catKey:"data",    skill:"Google Analytics (GA4) interpretation",            ri:"H", kerly:{s:2,nd:true,n:"Hasn't studied GA4 since Universal Analytics was replaced"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo23', cat:"Data & analysis",  catKey:"data",    skill:"SEO reporting & dashboards",                       ri:"H", kerly:{s:3,nd:true,n:"Needs more training to build confidence"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo24', cat:"Data & analysis",  catKey:"data",    skill:"SERP analysis",                                    ri:"H", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo25', cat:"Content",          catKey:"content", skill:"Content brief creation",                           ri:"L", kerly:{s:5,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo26', cat:"Content",          catKey:"content", skill:"Content gap analysis",                             ri:"L", kerly:{s:4,nd:true,n:"Can use AI prompts; still wants to improve"}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+  { id:'seo27', cat:"Content",          catKey:"content", skill:"Entity and semantic SEO",                          ri:"L", kerly:{s:4,nd:false}, gail:{s:1,nd:true}, jerome:{s:1,nd:true} },
+];
+
+function seoWorstAcross(persons, skill) {
+  const order = ['critical','high','medium','low-pri'];
+  let best = 'low-pri';
+  persons.forEach(p => {
+    const d = skill[p]; if (!d) return;
+    const s  = liveScore(skill.id, p, d.s);
+    let pc   = priorityClass(s, skill.ri);
+    if (d.nd && pc === 'low-pri') pc = 'medium';
+    if (order.indexOf(pc) < order.indexOf(best)) best = pc;
+  });
+  return best;
+}
+
+function countSEOCritical(person) {
+  return SEO_SKILLS.filter(s => {
+    const d = s[person]; if (!d) return false;
+    const sc = liveScore(s.id, person, d.s);
+    let pc = priorityClass(sc, s.ri);
+    if (d.nd && pc === 'low-pri') pc = 'medium';
+    return pc === 'critical';
+  }).length;
+}
+
+let seoView = 'all', seoPerson = 'all';
+
+window.setSEOPerson = function(v) {
+  seoPerson = v;
+  const labelMap = { all:'all three', kerly:'kerly', gail:'gail', jerome:'jerome' };
+  document.querySelectorAll('#seo-person-tabs .tab').forEach(t =>
+    t.classList.toggle('active', t.textContent.trim().toLowerCase() === labelMap[v]));
+  renderSEO();
+};
+
+window.setSEOView = function(v) {
+  seoView = v;
+  document.querySelectorAll('#seo-container .seo-person-tabs:not(#seo-person-tabs) .tab').forEach(t => {
+    t.classList.remove('active');
+    const lbl = t.textContent.trim().toLowerCase().replace(/\s+/g,'');
+    if ((v==='all' && t.textContent.trim().toLowerCase()==='all categories') || lbl === v.replace(/\s+/g,'')) t.classList.add('active');
+  });
+  renderSEO();
+};
+
+function renderSEO() {
+  const persons = seoPerson === 'all' ? SEO_PERSON_KEYS : [seoPerson];
+  const order   = ['critical','high','medium','low-pri'];
+  const skills  = seoView === 'all' ? SEO_SKILLS : SEO_SKILLS.filter(s => s.catKey === seoView);
+
+  const annotated = skills.map(s => ({...s, worst: seoWorstAcross(persons, s)}));
+  const sorted = [...annotated].sort((a,b) => {
+    const ad = !!state.completed[a.id] ? 1 : 0;
+    const bd = !!state.completed[b.id] ? 1 : 0;
+    if (ad !== bd) return ad - bd;
+    return order.indexOf(a.worst) - order.indexOf(b.worst);
+  });
+
+  document.getElementById('seo-cards-grid').innerHTML = sorted.map(skill => {
+    const barsHtml = persons.map(p => {
+      const d = skill[p]; if (!d) return '';
+      return makeBarRow(skill.id, p, SEO_DISPLAY[p], d.s);
+    }).join('');
+    const notes    = persons.map(p => skill[p]?.n).filter(Boolean);
+    const noteHtml = notes.length ? `<div class="training-note">${notes.join(' · ')}</div>` : '';
+    return makeCard(skill, barsHtml, noteHtml);
+  }).join('');
+
+  document.getElementById('seo-summary-section').style.display = seoPerson === 'all' ? 'block' : 'none';
+
+  const done = SEO_SKILLS.filter(s => !!state.completed[s.id]).length;
+  document.getElementById('seo-progress-fill').style.width = Math.round(done / SEO_SKILLS.length * 100) + '%';
+  document.getElementById('seo-progress-label').textContent = `${done} of ${SEO_SKILLS.length} trainings complete`;
+
+  document.getElementById('seo-k-critical').textContent = countSEOCritical('kerly');
+  document.getElementById('seo-g-critical').textContent = countSEOCritical('gail');
+  document.getElementById('seo-j-critical').textContent = countSEOCritical('jerome');
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+function renderAll() { renderAM(); renderSEO(); }
+// onValue listener above handles initial render — no manual call needed
+
+</script>
+</body>
+</html>
